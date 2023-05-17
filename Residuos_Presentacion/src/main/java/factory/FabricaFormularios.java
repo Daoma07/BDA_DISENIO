@@ -57,7 +57,7 @@ public class FabricaFormularios extends IFabricaFormularios {
 
     @Override
     public FrmSolicitudesTraslados crearFormularioSolicitudesTraslados(Usuario usuario) {
-        return new FrmSolicitudesTraslados();
+        return new FrmSolicitudesTraslados(negocio, usuario);
     }
 
     @Override
