@@ -1,0 +1,12 @@
+factory\IFabricaNegocio.class
+negocio\TrasladoNegocio.class
+factory\FabricaNegocio.class
+negocio\FleteNegocio.class
+negocio\QuimicoNegocio.class
+negocio\ProductorNegocio.class
+negocio\VehiculoNegocio.class
+negocio\AdministradorNegocio.class
+fachada\FachadaNegocio.class
+fachada\INegocio.class
+negocio\ResiduoNegocio.class
+negocio\TransportistaNegocio.class
