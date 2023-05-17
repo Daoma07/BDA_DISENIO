@@ -54,8 +54,10 @@ public class FrmPrincipal extends javax.swing.JFrame {
                     this.btnSolicitarTrasladoProductor.setVisible(true);
                     break;
                 case "administrador":
+                    this.btnVerTrasladosAdministrador.setVisible(true);
                     break;
                 case "transportista":
+                    this.btnRegistrarTrasladoTransportista.setVisible(true);
                     break;
                 default:
                     break;
@@ -180,8 +182,6 @@ public class FrmPrincipal extends javax.swing.JFrame {
     private void btnSalirMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnSalirMouseClicked
         // TODO add your handling code here:
         this.dispose();
-        Login login = new Login();
-        login.setVisible(true);
     }//GEN-LAST:event_btnSalirMouseClicked
 
     private void btnSolicitarTrasladoProductorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSolicitarTrasladoProductorActionPerformed
@@ -196,6 +196,7 @@ public class FrmPrincipal extends javax.swing.JFrame {
 
     private void btnVerTrasladosAdministradorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVerTrasladosAdministradorActionPerformed
         // TODO add your handling code here:
+        fabrica.crearFormularioSolicitudes().setVisible(true);
     }//GEN-LAST:event_btnVerTrasladosAdministradorActionPerformed
 
 

@@ -6,6 +6,7 @@
 package dominio;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import org.bson.types.ObjectId;
 
@@ -19,7 +20,7 @@ public class Traslado {
 
     private List<Residuo> residuo;
     private List<Flete> fletes;
-    private Calendar fechaSolicitada;
+    private Date fechaSolicitada;
     private Tratamiento tratamiento;
 
     /**
@@ -38,7 +39,7 @@ public class Traslado {
      * @param fechaSolicitada La fecha solicitada para el traslado.
      */
     public Traslado(List<Residuo> residuo,
-            List<Flete> fletes, Calendar fechaSolicitada, Tratamiento tratamiento) {
+            List<Flete> fletes, Date fechaSolicitada, Tratamiento tratamiento) {
         this.residuo = residuo;
         this.fletes = fletes;
         this.fechaSolicitada = fechaSolicitada;
@@ -56,7 +57,7 @@ public class Traslado {
      * @param fechaSolicitada La fecha solicitada para el traslado.
      */
     public Traslado(ObjectId id,
-            List<Residuo> residuo, List<Flete> fletes, Calendar fechaSolicitada,
+            List<Residuo> residuo, List<Flete> fletes, Date fechaSolicitada,
             Tratamiento tratamiento) {
         this.id = id;
         this.residuo = residuo;
@@ -124,7 +125,7 @@ public class Traslado {
      *
      * @return La fecha solicitada para el traslado.
      */
-    public Calendar getFechaSolicitada() {
+    public Date getFechaSolicitada() {
         return fechaSolicitada;
     }
 
@@ -133,7 +134,7 @@ public class Traslado {
      *
      * @param fechaSolicitada La fecha solicitada para el traslado.
      */
-    public void setFechaSolicitada(Calendar fechaSolicitada) {
+    public void setFechaSolicitada(Date fechaSolicitada) {
         this.fechaSolicitada = fechaSolicitada;
     }
 

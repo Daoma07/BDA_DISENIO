@@ -114,6 +114,11 @@ public class FachadaDAOs implements IDatos {
         return trasladoDAO.agregarTraslado(traslado);
     }
 
+    @Override
+    public List<Traslado> consultarTraslados() {
+        return trasladoDAO.consultarTraslados();
+    }
+
     //Vehiculo
     @Override
     public Vehiculo agregarVehiculo(Vehiculo vehiculo) {

@@ -7,6 +7,7 @@ package negocio;
 
 import dominio.Traslado;
 import fachada.IDatos;
+import java.util.List;
 
 /**
  *
@@ -22,5 +23,9 @@ public class TrasladoNegocio {
 
     public Traslado agregarTraslado(Traslado traslado) {
         return datos.agregarTraslado(traslado);
+    }
+
+    public List<Traslado> consultarTraslados() {
+        return datos.consultarTraslados();
     }
 }

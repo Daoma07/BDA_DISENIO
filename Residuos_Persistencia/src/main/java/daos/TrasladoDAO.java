@@ -7,11 +7,14 @@ package daos;
 import baseDatos.ConexionMongoDB;
 import baseDatos.IConexionBD;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import dominio.Administrador;
 import dominio.Traslado;
 import interfaces.ITrasladoDAO;
+import java.util.ArrayList;
 import java.util.List;
+import org.bson.Document;
 
 /**
  *
@@ -39,6 +42,18 @@ public class TrasladoDAO implements ITrasladoDAO {
             e.printStackTrace();
             return null;
         }
+    }
+
+    @Override
+    public List<Traslado> consultarTraslados() {
+        List<Traslado> traslados = new ArrayList<>();
+        try (MongoCursor<Traslado> cursor = this.COLECCION.find().iterator()) {
+            while (cursor.hasNext()) {
+                Traslado traslado = cursor.next();
+                traslados.add(traslado);
+            }
+        }
+        return traslados;
     }
 
 }

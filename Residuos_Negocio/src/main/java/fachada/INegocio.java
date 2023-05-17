@@ -51,6 +51,8 @@ public interface INegocio {
     //Traslado
     public Traslado agregarTraslado(Traslado traslado);
 
+    public List<Traslado> consultarTraslados();
+
     //Vehiculo
     public Vehiculo agregarVehiculo(Vehiculo vehiculo);
 }

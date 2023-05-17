@@ -23,6 +23,7 @@ public class Login extends javax.swing.JFrame {
 
     private INegocio negocio;
     private FabricaFormularios fabrica;
+    private Usuario usuarioNuevo;
 
     public Login() {
         initComponents();
@@ -35,10 +36,11 @@ public class Login extends javax.swing.JFrame {
         initComponents();
         this.negocio = negocio;
         fabrica = new FabricaFormularios();
+        usuarioNuevo = new Usuario();
     }
 
     public void validarUsuario() {
-        Usuario usuarioNuevo = new Usuario();
+
         String usuario = this.txtUsuario.getText();
         String contrasenia = this.txtContrasenia.getText();
         usuarioNuevo = negocio.encontrarUsuario(usuario, contrasenia);

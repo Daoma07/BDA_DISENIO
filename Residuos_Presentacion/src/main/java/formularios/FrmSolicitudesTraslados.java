@@ -4,12 +4,19 @@
  */
 package formularios;
 
+import dominio.Quimico;
 import dominio.Residuo;
+import dominio.Traslado;
+import dominio.Unidad;
 import dominio.Usuario;
 import fachada.INegocio;
 import factory.FabricaFormularios;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -41,11 +48,33 @@ public class FrmSolicitudesTraslados extends javax.swing.JFrame {
      * Metodo que llena la tabla tblQuimicosDisponibles, conforme al residuo
      * sleeccionado.
      */
-    public void llenarTablaResiduoQuimicos(Residuo residuo) {
+    public void llenarTablaResiduoQuimicos() {
+        int filaTabla = this.tblSolicitudesTraslado.getSelectedRow();
+        String id = (String) tblSolicitudesTraslado.getValueAt(filaTabla, 0).toString();
+        Residuo residuo = new Residuo();
+        residuo = negocio.buscarResiduo(id);
+        List<Quimico> quimicos = residuo.getQuimicos();
         DefaultTableModel modeloTabla = (DefaultTableModel) this.tblQuimicosDisponibles.getModel();
         // Limpia tabla anterior
         modeloTabla.setRowCount(0);
-        residuo.getQuimicos().forEach(quimico -> {
+        quimicos.forEach(quimico -> {
+            Object[] fila = {
+                quimico.getNombre()
+            };
+            modeloTabla.addRow(fila);
+        });
+    }
+
+    public void llenarTablaResiduoQuimicosSeleccionadoss() {
+        int filaTabla = this.tblSeleccionSolicitudes.getSelectedRow();
+        String id = (String) tblSeleccionSolicitudes.getValueAt(filaTabla, 0).toString();
+        Residuo residuo = new Residuo();
+        residuo = negocio.buscarResiduo(id);
+        List<Quimico> quimicos = residuo.getQuimicos();
+        DefaultTableModel modeloTabla = (DefaultTableModel) this.tblQuimicosSeleccionados.getModel();
+        // Limpia tabla anterior
+        modeloTabla.setRowCount(0);
+        quimicos.forEach(quimico -> {
             Object[] fila = {
                 quimico.getNombre()
             };
@@ -74,14 +103,18 @@ public class FrmSolicitudesTraslados extends javax.swing.JFrame {
      * Metodo que llena la tabla tblSeleccionSolicitudes conforme a los residuos
      * seleccionados.
      */
-    public void llenarTablaQuimicoSeleccionado() {
+    public void llenarTablaResiduoSeleccionado() {
         List<Residuo> listaResiduos = residuosSeleccionados;
         DefaultTableModel modeloTabla = (DefaultTableModel) this.tblSeleccionSolicitudes.getModel();
         //Limpia tabla anterior
         modeloTabla.setRowCount(0);
         listaResiduos.forEach(residuo -> {
             Object[] fila = {
-                residuo.getNombre()
+                residuo.getId(),
+                residuo.getCodigo(),
+                residuo.getNombre(),
+                residuo.getCantidad(),
+                residuo.getUnidad()
             };
             modeloTabla.addRow(fila);
 
@@ -93,18 +126,34 @@ public class FrmSolicitudesTraslados extends javax.swing.JFrame {
      *
      */
     public void seleccionarResiduo() {
-//        int fila = this.tblSolicitudesTraslado.getSelectedRow();
-//        int id = (int)tblSolicitudesTraslado.getValueAt(fila, 0);
-//        llenarTablaResiduoQuimicos(residuo);
-//        Residuo residuoSeleccionado = new Residuo();
-//
-//        this.quimicosSeleccionados.add(quimicoSeleccionado);
-//
-//        this.listaQuimicos.remove(quimicoSeleccionado);
-//
-//        this.llenarTablaQuimicoSeleccionado();
-//        this.llenarTablaQuimico();
+        int fila = this.tblSolicitudesTraslado.getSelectedRow();
+        String id = (String) tblSolicitudesTraslado.getValueAt(fila, 0).toString();
+        Residuo residuo = negocio.buscarResiduo(id);
+        for (int i = 0; i < listaResiduos.size(); i++) {
+            if (residuo.getCodigo() == listaResiduos.get(i).getCodigo()) {
+                listaResiduos.remove(i);
+            }
+        }
+        this.residuosSeleccionados.add(residuo);
+        this.llenarTablaResiduos();
+        this.llenarTablaResiduoSeleccionado();
+    }
 
+    public void seleccionarResiduoAsignar() {
+        int fila = this.tblSeleccionSolicitudes.getSelectedRow();
+        //String id = (String) tblSeleccionSolicitudes.getValueAt(fila, 0).toString();
+        Float cantidad = Float.valueOf(this.txtCantidad.getText());
+        String unidadSeleccionada = (String) this.cbxUnidades.getSelectedItem();
+        Unidad unidad = null;
+        if (unidadSeleccionada == "LITRO") {
+            unidad = unidad.LITROS;
+        } else {
+            unidad = unidad.KILOGRAMOS;
+        }
+
+        residuosSeleccionados.get(fila).setCantidad(cantidad);
+        residuosSeleccionados.get(fila).setUnidad(unidad);
+        this.llenarTablaResiduoSeleccionado();
     }
 
     /**
@@ -128,7 +177,7 @@ public class FrmSolicitudesTraslados extends javax.swing.JFrame {
         jLabel4 = new javax.swing.JLabel();
         btnSolicitar = new javax.swing.JButton();
         btnSalir = new javax.swing.JLabel();
-        jDateChooser1 = new com.toedter.calendar.JDateChooser();
+        fecha = new com.toedter.calendar.JDateChooser();
         jLabel5 = new javax.swing.JLabel();
         jScrollPane3 = new javax.swing.JScrollPane();
         tblQuimicosDisponibles = new javax.swing.JTable();
@@ -137,6 +186,7 @@ public class FrmSolicitudesTraslados extends javax.swing.JFrame {
         jLabel6 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
         btnSeleccionar = new javax.swing.JButton();
+        btnAsignar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Solicitudes Traslados");
@@ -155,12 +205,24 @@ public class FrmSolicitudesTraslados extends javax.swing.JFrame {
                 "ID", "Codigo", "Nombre"
             }
         ) {
+            Class[] types = new Class [] {
+                java.lang.String.class, java.lang.Object.class, java.lang.Object.class
+            };
             boolean[] canEdit = new boolean [] {
                 false, false, false
             };
 
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
             public boolean isCellEditable(int rowIndex, int columnIndex) {
                 return canEdit [columnIndex];
+            }
+        });
+        tblSolicitudesTraslado.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblSolicitudesTrasladoMouseClicked(evt);
             }
         });
         jScrollPane1.setViewportView(tblSolicitudesTraslado);
@@ -172,15 +234,20 @@ public class FrmSolicitudesTraslados extends javax.swing.JFrame {
 
             },
             new String [] {
-                "ID", "Codigo", "Nombre", "Quimico", "Tratamiento", "Cantidad", "Unidad Medida"
+                "ID", "Codigo", "Nombre", "Cantidad", "Unidad Medida"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false, false
+                false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
                 return canEdit [columnIndex];
+            }
+        });
+        tblSeleccionSolicitudes.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblSeleccionSolicitudesMouseClicked(evt);
             }
         });
         jScrollPane2.setViewportView(tblSeleccionSolicitudes);
@@ -196,14 +263,24 @@ public class FrmSolicitudesTraslados extends javax.swing.JFrame {
         getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 338, -1, -1));
 
         cbxUnidades.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "LITRO", "KILOGRAMO" }));
-        getContentPane().add(cbxUnidades, new org.netbeans.lib.awtextra.AbsoluteConstraints(304, 617, -1, -1));
-        getContentPane().add(txtCantidad, new org.netbeans.lib.awtextra.AbsoluteConstraints(552, 618, 101, -1));
+        cbxUnidades.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cbxUnidadesActionPerformed(evt);
+            }
+        });
+        getContentPane().add(cbxUnidades, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 410, -1, -1));
+        getContentPane().add(txtCantidad, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 480, 101, -1));
 
         jLabel4.setText("Ingrese la Cantidad:");
-        getContentPane().add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(422, 622, -1, -1));
+        getContentPane().add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 450, -1, 20));
 
         btnSolicitar.setText("Solicitar");
-        getContentPane().add(btnSolicitar, new org.netbeans.lib.awtextra.AbsoluteConstraints(606, 661, -1, -1));
+        btnSolicitar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSolicitarActionPerformed(evt);
+            }
+        });
+        getContentPane().add(btnSolicitar, new org.netbeans.lib.awtextra.AbsoluteConstraints(620, 620, -1, -1));
 
         btnSalir.setFont(new java.awt.Font("Dialog", 1, 48)); // NOI18N
         btnSalir.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/exit.png"))); // NOI18N
@@ -213,10 +290,10 @@ public class FrmSolicitudesTraslados extends javax.swing.JFrame {
             }
         });
         getContentPane().add(btnSalir, new org.netbeans.lib.awtextra.AbsoluteConstraints(1153, 20, -1, -1));
-        getContentPane().add(jDateChooser1, new org.netbeans.lib.awtextra.AbsoluteConstraints(772, 614, 181, -1));
+        getContentPane().add(fecha, new org.netbeans.lib.awtextra.AbsoluteConstraints(810, 620, 181, -1));
 
         jLabel5.setText("Ingrese Fecha:");
-        getContentPane().add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(671, 622, -1, -1));
+        getContentPane().add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(720, 630, -1, -1));
 
         tblQuimicosDisponibles.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -267,7 +344,20 @@ public class FrmSolicitudesTraslados extends javax.swing.JFrame {
         getContentPane().add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(901, 364, -1, -1));
 
         btnSeleccionar.setText("Seleccionar");
-        getContentPane().add(btnSeleccionar, new org.netbeans.lib.awtextra.AbsoluteConstraints(630, 330, -1, -1));
+        btnSeleccionar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSeleccionarActionPerformed(evt);
+            }
+        });
+        getContentPane().add(btnSeleccionar, new org.netbeans.lib.awtextra.AbsoluteConstraints(600, 330, -1, -1));
+
+        btnAsignar.setText("Asignar");
+        btnAsignar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAsignarActionPerformed(evt);
+            }
+        });
+        getContentPane().add(btnAsignar, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 530, -1, -1));
 
         pack();
         setLocationRelativeTo(null);
@@ -278,13 +368,58 @@ public class FrmSolicitudesTraslados extends javax.swing.JFrame {
         this.dispose();
     }//GEN-LAST:event_btnSalirMouseClicked
 
+    private void tblSolicitudesTrasladoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblSolicitudesTrasladoMouseClicked
+        // TODO add your handling code here:
+        this.llenarTablaResiduoQuimicos();
+    }//GEN-LAST:event_tblSolicitudesTrasladoMouseClicked
+
+    private void btnSeleccionarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSeleccionarActionPerformed
+        // TODO add your handling code here:
+        this.seleccionarResiduo();
+    }//GEN-LAST:event_btnSeleccionarActionPerformed
+
+    private void tblSeleccionSolicitudesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblSeleccionSolicitudesMouseClicked
+        // TODO add your handling code here:
+        this.llenarTablaResiduoQuimicosSeleccionadoss();
+    }//GEN-LAST:event_tblSeleccionSolicitudesMouseClicked
+
+    private void btnAsignarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAsignarActionPerformed
+        // TODO add your handling code here:
+        this.seleccionarResiduoAsignar();
+        this.txtCantidad.setText("");
+    }//GEN-LAST:event_btnAsignarActionPerformed
+
+    private void cbxUnidadesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbxUnidadesActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cbxUnidadesActionPerformed
+
+    public void vaciarFormulario() {
+        this.residuosSeleccionados.clear();
+        this.listaResiduos.clear();
+        this.listaResiduos = negocio.consultarResiduos();
+        this.llenarTablaResiduoSeleccionado();
+        this.llenarTablaResiduos();
+    }
+
+    private void btnSolicitarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSolicitarActionPerformed
+        // TODO add your handling code here:
+
+        Traslado traslado = new Traslado(residuosSeleccionados, null, fecha.getDate(), null);
+
+        if (negocio.agregarTraslado(traslado) != null) {
+            JOptionPane.showMessageDialog(null, "Se agrego el Traslado");
+            this.vaciarFormulario();
+        }
+    }//GEN-LAST:event_btnSolicitarActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnAsignar;
     private javax.swing.JLabel btnSalir;
     private javax.swing.JButton btnSeleccionar;
     private javax.swing.JButton btnSolicitar;
     private javax.swing.JComboBox<String> cbxUnidades;
-    private com.toedter.calendar.JDateChooser jDateChooser1;
+    private com.toedter.calendar.JDateChooser fecha;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;

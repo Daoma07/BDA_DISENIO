@@ -16,4 +16,5 @@ public interface ITrasladoDAO {
 
     public Traslado agregarTraslado(Traslado traslado);
 
+    public List<Traslado> consultarTraslados();
 }

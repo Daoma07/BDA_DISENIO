@@ -5,17 +5,42 @@
  */
 package formularios;
 
+import dominio.Residuo;
+import dominio.Traslado;
+import fachada.INegocio;
+import java.util.List;
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author paulvazquez
  */
 public class FrmSolicitudes extends javax.swing.JFrame {
 
+    private INegocio negocio;
+    private List<Traslado> listaTraslados;
+
     /**
      * Creates new form FrmSolicitudes
      */
-    public FrmSolicitudes() {
+    public FrmSolicitudes(INegocio negocio) {
         initComponents();
+        this.negocio = negocio;
+        this.listaTraslados = negocio.consultarTraslados();
+        this.llenarTablaTraslados();
+    }
+
+    public void llenarTablaTraslados() {
+        DefaultTableModel modeloTabla = (DefaultTableModel) this.tblTrasladoNA.getModel();
+        // Limpia tabla anterior
+        modeloTabla.setRowCount(0);
+        listaTraslados.forEach(traslado -> {
+            Object[] fila = {
+                traslado.getId(),
+                //traslado.getResiduo().get(0).getProductor().getNombre(),
+                traslado.getFechaSolicitada()};
+            modeloTabla.addRow(fila);
+        });
     }
 
     /**
@@ -64,11 +89,11 @@ public class FrmSolicitudes extends javax.swing.JFrame {
 
             },
             new String [] {
-                "ID", "Codigo", "Productor", "Fecha Solicitada"
+                "ID", "Fecha Solicitada"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false
+                false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -303,40 +328,6 @@ public class FrmSolicitudes extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_btnSolicitarActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(FrmSolicitudes.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(FrmSolicitudes.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(FrmSolicitudes.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(FrmSolicitudes.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new FrmSolicitudes().setVisible(true);
-            }
-        });
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel btnSalir;
