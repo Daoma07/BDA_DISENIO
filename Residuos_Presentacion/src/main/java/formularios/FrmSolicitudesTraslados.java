@@ -165,57 +165,55 @@ public class FrmSolicitudesTraslados extends javax.swing.JFrame {
             return true;
         }
     }
-    
-    public boolean validaCampoFecha(){
-        if(fecha.getDate() == null){
+
+    public boolean validaCampoFecha() {
+        if (fecha.getDate() == null) {
             JOptionPane.showMessageDialog(null, "Porfavor selecciona una fecha del selector...", "Error", JOptionPane.INFORMATION_MESSAGE);
             return false;
-        }else{
+        } else {
             return true;
         }
     }
-    
-    public boolean validaFechaSeleccionada(){
+
+    public boolean validaFechaSeleccionada() {
         LocalDate fechaActual = LocalDate.now();
         Date fechaAsignada = fecha.getDate();
-        Date nuevaFechaActual = new Date(fechaActual.getYear()-1900, fechaActual.getMonthValue()-1,fechaActual.getDayOfMonth());
+        Date nuevaFechaActual = new Date(fechaActual.getYear() - 1900, fechaActual.getMonthValue() - 1, fechaActual.getDayOfMonth());
         int res = fechaAsignada.compareTo(nuevaFechaActual);
-        System.out.println("FECHA ACTUAL: "+ nuevaFechaActual);
-        System.out.println("FECHA SELECCIONADA: "+ fechaAsignada);
-        if(res<0){
+        System.out.println("FECHA ACTUAL: " + nuevaFechaActual);
+        System.out.println("FECHA SELECCIONADA: " + fechaAsignada);
+        if (res < 0) {
             JOptionPane.showMessageDialog(null, "La fecha asignada es menor a la actual...", "Error", JOptionPane.INFORMATION_MESSAGE);
             return false;
         }
         return true;
     }
-    
-    public boolean validarSeleccionResiduo(){
-        if(residuosSeleccionados.size() == 0){
+
+    public boolean validarSeleccionResiduo() {
+        if (residuosSeleccionados.size() == 0) {
             JOptionPane.showMessageDialog(null, "Porfavor agrega minimo un residuo al traslado...", "Error", JOptionPane.INFORMATION_MESSAGE);
             return false;
-        }else{
+        } else {
             return true;
         }
     }
-    
-    public boolean validaAsignacionUnidadCantidad(){
+
+    public boolean validaAsignacionUnidadCantidad() {
         float cantidad = 0;
         Unidad unidadMedida = null;
-        
+
         for (int i = 0; i < residuosSeleccionados.size(); i++) {
             cantidad = (float) tblSeleccionSolicitudes.getValueAt(i, 3);
             unidadMedida = (Unidad) tblSeleccionSolicitudes.getValueAt(i, 4);
-            System.out.println("CANTIDAD"+cantidad);
-            System.out.println("UNIDAD"+unidadMedida);
-            if(cantidad <= 0 || unidadMedida == null){    
-            JOptionPane.showMessageDialog(null, "Porfavor asigna una cantidad y unidad de medida al residuo...", "Error", JOptionPane.INFORMATION_MESSAGE);
-            return false;
+            System.out.println("CANTIDAD" + cantidad);
+            System.out.println("UNIDAD" + unidadMedida);
+            if (cantidad <= 0 || unidadMedida == null) {
+                JOptionPane.showMessageDialog(null, "Porfavor asigna una cantidad y unidad de medida al residuo...", "Error", JOptionPane.INFORMATION_MESSAGE);
+                return false;
             }
         }
         return true;
     }
-    
-    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -484,7 +482,8 @@ public class FrmSolicitudesTraslados extends javax.swing.JFrame {
 
     private void txtCantidadKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtCantidadKeyTyped
         char c = evt.getKeyChar();
-        if(c<'0' || c>'9') evt.consume();
+        if (c < '0' || c > '9')
+            evt.consume();
     }//GEN-LAST:event_txtCantidadKeyTyped
 
 

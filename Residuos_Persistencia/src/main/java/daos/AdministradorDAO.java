@@ -7,12 +7,14 @@ package daos;
 
 import baseDatos.ConexionMongoDB;
 import baseDatos.IConexionBD;
+import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import dominio.Administrador;
-import dominio.Productor;
+
 import dominio.Usuario;
 import interfaces.IAdministradorDAO;
+import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JOptionPane;
 import org.bson.Document;
@@ -88,6 +90,29 @@ public class AdministradorDAO implements IAdministradorDAO {
             return null;
         }
 
+    }
+
+    @Override
+    public List<Usuario> buscarUsuarios() {
+        List<Usuario> usuarios = new ArrayList<>();
+
+        // Obtener todos los documentos de la colección
+        FindIterable<Usuario> documents = this.COLECCION.find();
+
+        // Iterar sobre los documentos y crear instancias de Usuario
+        for (Usuario document : documents) {
+            Usuario usuario = new Usuario();
+
+            // Asignar los valores del documento a los atributos del Usuario
+            usuario.setId(document.getId());
+            usuario.setNombre(document.getNombre());
+            usuario.setRfc(document.getRfc());
+            usuario.setTipo(document.getTipo());
+            // ... asignar los demás atributos
+
+            usuarios.add(usuario);
+        }
+        return usuarios;
     }
 
 }

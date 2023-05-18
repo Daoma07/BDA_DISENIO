@@ -18,4 +18,6 @@ public interface IAdministradorDAO {
     public Administrador agregarAdministrador(Administrador administrador);
 
     public Usuario encontrarUsuario(String usuario, String contrasenia);
+
+    public List<Usuario> buscarUsuarios();
 }

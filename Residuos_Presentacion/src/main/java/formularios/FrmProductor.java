@@ -5,17 +5,59 @@
  */
 package formularios;
 
+import dominio.Residuo;
+import dominio.Transportista;
+import dominio.Traslado;
+import dominio.Usuario;
+import fachada.INegocio;
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author paulvazquez
  */
 public class FrmProductor extends javax.swing.JFrame {
 
+    private INegocio negocio;
+    private Traslado traslado;
+    public List<Residuo> residuos;
+    
+
     /**
      * Creates new form FrmProductor
      */
-    public FrmProductor() {
+    public FrmProductor(INegocio negocio, Traslado traslado) {
         initComponents();
+        this.negocio = negocio;
+        this.traslado = traslado;
+        residuos = new ArrayList<>();
+        
+        this.llenarTablaResiduos();
+        this.txtFecha.setText(traslado.getFechaSolicitada().toString());
+        this.txtProductor.setText(traslado.getResiduo().get(0).getProductor().getNombre());
+
+    }
+
+ 
+
+    public void llenarTablaResiduos() {
+        residuos = traslado.getResiduo();
+        DefaultTableModel modeloTabla = (DefaultTableModel) this.tblResiduos.getModel();
+        // Limpia tabla anterior
+        modeloTabla.setRowCount(0);
+        residuos.forEach(reisduo -> {
+            //residuos.add(reisduo);
+            Object[] fila = {
+                reisduo.getId(),
+                reisduo.getCodigo(),
+                reisduo.getNombre(),
+                reisduo.getCantidad(),
+                reisduo.getUnidad()
+            };
+            modeloTabla.addRow(fila);
+        });
     }
 
     /**
@@ -34,8 +76,10 @@ public class FrmProductor extends javax.swing.JFrame {
         txtFecha = new javax.swing.JTextField();
         txtProductor = new javax.swing.JTextField();
         btnSalir = new javax.swing.JLabel();
+        btnSeleccionar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setBackground(new java.awt.Color(51, 51, 51));
         setUndecorated(true);
 
         jLabel1.setFont(new java.awt.Font("Dialog", 0, 48)); // NOI18N
@@ -46,15 +90,20 @@ public class FrmProductor extends javax.swing.JFrame {
 
             },
             new String [] {
-                "ID", "Codigo", "Nombre", "Quimico", "Tratamiento", "Cantidad", "Unidad Medida"
+                "ID", "Codigo", "Nombre", "Cantidad", "Unidad Medida"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false, false
+                false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
                 return canEdit [columnIndex];
+            }
+        });
+        tblResiduos.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblResiduosMouseClicked(evt);
             }
         });
         jScrollPane2.setViewportView(tblResiduos);
@@ -71,6 +120,13 @@ public class FrmProductor extends javax.swing.JFrame {
         btnSalir.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 btnSalirMouseClicked(evt);
+            }
+        });
+
+        btnSeleccionar.setText("Seleccionar");
+        btnSeleccionar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSeleccionarActionPerformed(evt);
             }
         });
 
@@ -97,7 +153,10 @@ public class FrmProductor extends javax.swing.JFrame {
                         .addGap(302, 302, 302))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 736, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(47, 47, 47))))
+                        .addGap(47, 47, 47))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(btnSeleccionar)
+                        .addGap(379, 379, 379))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -105,21 +164,21 @@ public class FrmProductor extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(23, 23, 23)
-                        .addComponent(btnSalir)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(btnSalir))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(41, 41, 41)
                         .addComponent(jLabel1)
                         .addGap(18, 18, 18)
-                        .addComponent(txtProductor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addComponent(txtProductor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(22, 22, 22)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 154, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel2)
                 .addGap(18, 18, 18)
                 .addComponent(txtFecha, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(140, 140, 140))
+                .addGap(51, 51, 51)
+                .addComponent(btnSeleccionar)
+                .addGap(57, 57, 57))
         );
 
         pack();
@@ -131,47 +190,22 @@ public class FrmProductor extends javax.swing.JFrame {
         this.dispose();
     }//GEN-LAST:event_btnSalirMouseClicked
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(FrmProductor.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(FrmProductor.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(FrmProductor.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(FrmProductor.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
+    private void btnSeleccionarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSeleccionarActionPerformed
+        // TODO add your handling code here:
 
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new FrmProductor().setVisible(true);
-            }
-        });
-    }
+    }//GEN-LAST:event_btnSeleccionarActionPerformed
+
+    private void tblResiduosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblResiduosMouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_tblResiduosMouseClicked
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel btnSalir;
+    public javax.swing.JButton btnSeleccionar;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JTable tblResiduos;
+    public javax.swing.JTable tblResiduos;
     private javax.swing.JTextField txtFecha;
     private javax.swing.JTextField txtProductor;
     // End of variables declaration//GEN-END:variables

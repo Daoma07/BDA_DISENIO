@@ -27,6 +27,8 @@ public interface INegocio {
 
     public Usuario encontrarUsuario(String usuario, String contrasenia);
 
+    public List<Usuario> buscarUsuarios();
+
     //Flete
     public Flete agregarFlete(Flete flete);
 

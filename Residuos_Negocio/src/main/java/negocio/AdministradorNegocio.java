@@ -8,6 +8,7 @@ package negocio;
 import dominio.Administrador;
 import dominio.Usuario;
 import fachada.IDatos;
+import java.util.List;
 
 /**
  *
@@ -27,5 +28,9 @@ public class AdministradorNegocio {
 
     public Usuario encontrarUsuario(String usuario, String contrasenia) {
         return datos.encontrarUsuario(usuario, contrasenia);
+    }
+
+    public List<Usuario> buscarUsuarios() {
+        return datos.buscarUsuarios();
     }
 }

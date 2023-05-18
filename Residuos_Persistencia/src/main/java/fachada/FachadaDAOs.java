@@ -63,6 +63,11 @@ public class FachadaDAOs implements IDatos {
         return administradorDAO.encontrarUsuario(usuario, contrasenia);
     }
 
+    @Override
+    public List<Usuario> buscarUsuarios() {
+        return administradorDAO.buscarUsuarios();
+    }
+
     //Flete
     @Override
     public Flete agregarFlete(Flete flete) {

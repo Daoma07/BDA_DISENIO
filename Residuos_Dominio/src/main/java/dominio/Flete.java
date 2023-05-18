@@ -15,8 +15,8 @@ import org.bson.types.ObjectId;
 public class Flete {
 
     private ObjectId id;
-    private Traslado traslado;
-    private Transportista transportista;
+    private Residuo residuo;
+    private Usuario transportista;
     private int numeroVehiculos;
     private Float kilometrajeRecorridos;
     private Float costeTrabajo;
@@ -25,43 +25,46 @@ public class Flete {
     private List<cargaVehiculo> cargasVehiculo;
 
     /**
-     * Constructor predeterminado de la clase Flete.
-     * Crea una instancia de Flete sin inicializar sus atributos.
+     * Constructor predeterminado de la clase Flete. Crea una instancia de Flete
+     * sin inicializar sus atributos.
      */
     public Flete() {
     }
 
-     /**
-     * Constructor de la clase Flete que recibe el traslado, transportista, destino y cargas de vehículo.
+    /**
+     * Constructor de la clase Flete que recibe el traslado, transportista,
+     * destino y cargas de vehículo.
      *
-     * @param traslado        El traslado asociado al flete.
-     * @param transportista   El transportista encargado del flete.
-     * @param destino         El destino del flete.
-     * @param cargasVehiculo  Las cargas de vehículo del flete.
+     * @param residuo El traslado asociado al flete.
+     * @param transportista El transportista encargado del flete.
+     * @param destino El destino del flete.
+     * @param cargasVehiculo Las cargas de vehículo del flete.
      */
-    public Flete(Traslado traslado, Transportista transportista, Destino destino, List<cargaVehiculo> cargasVehiculo) {
-        this.traslado = traslado;
+    public Flete(Residuo residuo, Usuario transportista, Destino destino, Float cantidadTransportada) {
+        this.residuo = residuo;
         this.transportista = transportista;
         this.destino = destino;
-        this.cargasVehiculo = cargasVehiculo;
+        this.cantidadTransportada = cantidadTransportada;
     }
 
     /**
-     * Constructor de la clase Flete que recibe el ID, traslado, transportista, número de vehículos, kilometraje recorrido, coste de trabajo, cantidad transportada, destino y cargas de vehículo.
+     * Constructor de la clase Flete que recibe el ID, traslado, transportista,
+     * número de vehículos, kilometraje recorrido, coste de trabajo, cantidad
+     * transportada, destino y cargas de vehículo.
      *
-     * @param id                   El ID del flete.
-     * @param traslado             El traslado asociado al flete.
-     * @param transportista        El transportista encargado del flete.
-     * @param numeroVehiculos      El número de vehículos utilizados en el flete.
+     * @param id El ID del flete.
+     * @param traslado El traslado asociado al flete.
+     * @param transportista El transportista encargado del flete.
+     * @param numeroVehiculos El número de vehículos utilizados en el flete.
      * @param kilometrajeRecorridos El kilometraje recorrido en el flete.
-     * @param costeTrabajo         El coste de trabajo del flete.
+     * @param costeTrabajo El coste de trabajo del flete.
      * @param cantidadTransportada La cantidad transportada en el flete.
-     * @param destino              El destino del flete.
-     * @param cargasVehiculo       Las cargas de vehículo del flete.
+     * @param destino El destino del flete.
+     * @param cargasVehiculo Las cargas de vehículo del flete.
      */
-    public Flete(ObjectId id, Traslado traslado, Transportista transportista, int numeroVehiculos, Float kilometrajeRecorridos, Float costeTrabajo, Float cantidadTransportada, Destino destino, List<cargaVehiculo> cargasVehiculo) {
+    public Flete(ObjectId id, Residuo residuo, Transportista transportista, int numeroVehiculos, Float kilometrajeRecorridos, Float costeTrabajo, Float cantidadTransportada, Destino destino, List<cargaVehiculo> cargasVehiculo) {
         this.id = id;
-        this.traslado = traslado;
+        this.residuo = residuo;
         this.transportista = transportista;
         this.numeroVehiculos = numeroVehiculos;
         this.kilometrajeRecorridos = kilometrajeRecorridos;
@@ -80,7 +83,7 @@ public class Flete {
         return id;
     }
 
-     /**
+    /**
      * Establece el ID del flete.
      *
      * @param id el ID del flete a establecer.
@@ -89,22 +92,12 @@ public class Flete {
         this.id = id;
     }
 
-    /**
-     * Obtiene el Traslado del flete.
-     * 
-     * @return El Traslado del flete.
-     */
-    public Traslado getTraslado() {
-        return traslado;
+    public Residuo getResiduo() {
+        return residuo;
     }
 
-    /**
-     * Establece el Traslado del flete.
-     *
-     * @param traslado el Traslado del flete a establecer.
-     */
-    public void setTraslado(Traslado traslado) {
-        this.traslado = traslado;
+    public void setResiduo(Residuo residuo) {
+        this.residuo = residuo;
     }
 
     /**
@@ -112,7 +105,7 @@ public class Flete {
      *
      * @return El Transportista del flete.
      */
-    public Transportista getTransportista() {
+    public Usuario getTransportista() {
         return transportista;
     }
 
@@ -121,7 +114,7 @@ public class Flete {
      *
      * @param transportista el Transportista del flete a establecer.
      */
-    public void setTransportista(Transportista transportista) {
+    public void setTransportista(Usuario transportista) {
         this.transportista = transportista;
     }
 
@@ -155,7 +148,8 @@ public class Flete {
     /**
      * Establece el Kilometraje Recorrido del flete.
      *
-     * @param kilometrajeRecorridos el Kilometraje Recorrido del flete a establecer.
+     * @param kilometrajeRecorridos el Kilometraje Recorrido del flete a
+     * establecer.
      */
     public void setKilometrajeRecorridos(Float kilometrajeRecorridos) {
         this.kilometrajeRecorridos = kilometrajeRecorridos;
@@ -197,7 +191,7 @@ public class Flete {
         this.cantidadTransportada = cantidadTransportada;
     }
 
-     /**
+    /**
      * Obtiene El Destino del flete.
      *
      * @return El Destino del flete.

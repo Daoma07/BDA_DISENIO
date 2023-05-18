@@ -5,10 +5,18 @@
  */
 package formularios;
 
+import dominio.Flete;
 import dominio.Residuo;
+import dominio.Transportista;
 import dominio.Traslado;
+import dominio.Usuario;
 import fachada.INegocio;
+import factory.FabricaFormularios;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.List;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -19,15 +27,25 @@ public class FrmSolicitudes extends javax.swing.JFrame {
 
     private INegocio negocio;
     private List<Traslado> listaTraslados;
+    private FabricaFormularios fabrica;
+    private List<Traslado> traslados;
+    private Residuo residuoObtenido;
+    public List<Usuario> transportistas;
+    public List<Usuario> transportistasSeleccionados;
 
     /**
      * Creates new form FrmSolicitudes
      */
     public FrmSolicitudes(INegocio negocio) {
         initComponents();
+        traslados = new ArrayList<>();
         this.negocio = negocio;
+        transportistas = new ArrayList<>();
+        transportistasSeleccionados = new ArrayList<>();
         this.listaTraslados = negocio.consultarTraslados();
         this.llenarTablaTraslados();
+        this.fabrica = new FabricaFormularios();
+        residuoObtenido = new Residuo();
     }
 
     public void llenarTablaTraslados() {
@@ -35,9 +53,10 @@ public class FrmSolicitudes extends javax.swing.JFrame {
         // Limpia tabla anterior
         modeloTabla.setRowCount(0);
         listaTraslados.forEach(traslado -> {
+            traslados.add(traslado);
             Object[] fila = {
                 traslado.getId(),
-                //traslado.getResiduo().get(0).getProductor().getNombre(),
+                traslado.getResiduo().get(0).getProductor().getNombre(),
                 traslado.getFechaSolicitada()};
             modeloTabla.addRow(fila);
         });
@@ -59,20 +78,16 @@ public class FrmSolicitudes extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         txtCodigo = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
         txtNombre = new javax.swing.JTextField();
-        txtQuimico = new javax.swing.JTextField();
-        txtTratamiento = new javax.swing.JTextField();
         txtCantidad = new javax.swing.JTextField();
         txtUnidadMedida = new javax.swing.JTextField();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        tblTransportistas = new javax.swing.JTable();
         jLabel7 = new javax.swing.JLabel();
         jScrollPane3 = new javax.swing.JScrollPane();
-        jTable2 = new javax.swing.JTable();
+        tblTransportistasSeleccionados = new javax.swing.JTable();
         jLabel8 = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
         btnSolicitar = new javax.swing.JButton();
@@ -80,27 +95,36 @@ public class FrmSolicitudes extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setUndecorated(true);
         setPreferredSize(new java.awt.Dimension(950, 650));
+        getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         lblSolicitudesNoAtendidas.setFont(new java.awt.Font("Dialog", 0, 48)); // NOI18N
         lblSolicitudesNoAtendidas.setText("Solicitudes No Atendidas");
+        getContentPane().add(lblSolicitudesNoAtendidas, new org.netbeans.lib.awtextra.AbsoluteConstraints(197, 62, -1, -1));
 
         tblTrasladoNA.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
             new String [] {
-                "ID", "Fecha Solicitada"
+                "ID", "Productor", "Fecha Solicitada"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false
+                false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
                 return canEdit [columnIndex];
             }
         });
+        tblTrasladoNA.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblTrasladoNAMouseClicked(evt);
+            }
+        });
         jScrollPane2.setViewportView(tblTrasladoNA);
+
+        getContentPane().add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(281, 142, -1, 162));
 
         btnSalir.setFont(new java.awt.Font("Dialog", 1, 48)); // NOI18N
         btnSalir.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/exit.png"))); // NOI18N
@@ -109,9 +133,11 @@ public class FrmSolicitudes extends javax.swing.JFrame {
                 btnSalirMouseClicked(evt);
             }
         });
+        getContentPane().add(btnSalir, new org.netbeans.lib.awtextra.AbsoluteConstraints(882, 22, -1, -1));
 
         jLabel1.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
         jLabel1.setText("Codigo");
+        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(143, 386, -1, -1));
 
         txtCodigo.setEditable(false);
         txtCodigo.addActionListener(new java.awt.event.ActionListener() {
@@ -119,33 +145,30 @@ public class FrmSolicitudes extends javax.swing.JFrame {
                 txtCodigoActionPerformed(evt);
             }
         });
+        getContentPane().add(txtCodigo, new org.netbeans.lib.awtextra.AbsoluteConstraints(202, 384, 100, -1));
 
         jLabel2.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
         jLabel2.setText("Nombre");
-
-        jLabel3.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
-        jLabel3.setText("Quimico");
-
-        jLabel4.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
-        jLabel4.setText("Tratamiento");
+        getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(139, 422, -1, -1));
 
         jLabel5.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
         jLabel5.setText("Cantidad");
+        getContentPane().add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 460, -1, -1));
 
         jLabel6.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
         jLabel6.setText("Unidad de medida");
+        getContentPane().add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 500, -1, -1));
 
         txtNombre.setEditable(false);
-
-        txtQuimico.setEditable(false);
-
-        txtTratamiento.setEditable(false);
+        getContentPane().add(txtNombre, new org.netbeans.lib.awtextra.AbsoluteConstraints(202, 420, 100, -1));
 
         txtCantidad.setEditable(false);
+        getContentPane().add(txtCantidad, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 460, 98, -1));
 
         txtUnidadMedida.setEditable(false);
+        getContentPane().add(txtUnidadMedida, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 500, 98, -1));
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        tblTransportistas.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
@@ -161,12 +184,20 @@ public class FrmSolicitudes extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
-        jScrollPane1.setViewportView(jTable1);
+        tblTransportistas.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblTransportistasMouseClicked(evt);
+            }
+        });
+        jScrollPane1.setViewportView(tblTransportistas);
+
+        getContentPane().add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(394, 381, 177, 207));
 
         jLabel7.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
         jLabel7.setText("Empresas Transportadoras");
+        getContentPane().add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(394, 339, -1, -1));
 
-        jTable2.setModel(new javax.swing.table.DefaultTableModel(
+        tblTransportistasSeleccionados.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
@@ -182,13 +213,22 @@ public class FrmSolicitudes extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
-        jScrollPane3.setViewportView(jTable2);
+        tblTransportistasSeleccionados.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblTransportistasSeleccionadosMouseClicked(evt);
+            }
+        });
+        jScrollPane3.setViewportView(tblTransportistasSeleccionados);
+
+        getContentPane().add(jScrollPane3, new org.netbeans.lib.awtextra.AbsoluteConstraints(661, 381, 186, 207));
 
         jLabel8.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
         jLabel8.setText("Transportistas Seleccionadas");
+        getContentPane().add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(660, 339, -1, -1));
 
         jLabel9.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
         jLabel9.setText("Residuo");
+        getContentPane().add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(197, 339, -1, -1));
 
         btnSolicitar.setText("Solicitar");
         btnSolicitar.addActionListener(new java.awt.event.ActionListener() {
@@ -196,120 +236,7 @@ public class FrmSolicitudes extends javax.swing.JFrame {
                 btnSolicitarActionPerformed(evt);
             }
         });
-
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(197, 197, 197)
-                .addComponent(lblSolicitudesNoAtendidas)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(btnSalir)
-                .addGap(21, 21, 21))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(217, 217, 217))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btnSolicitar))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(76, 76, 76)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(121, 121, 121)
-                                .addComponent(jLabel9))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                        .addComponent(jLabel6)
-                                        .addComponent(jLabel5)
-                                        .addComponent(jLabel4))
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addGap(63, 63, 63)
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(jLabel3)
-                                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                                .addComponent(jLabel1)
-                                                .addComponent(jLabel2)))))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addGap(1, 1, 1)
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(txtCantidad, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(txtUnidadMedida, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(txtTratamiento, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                    .addComponent(txtQuimico, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(txtNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(txtCodigo, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 92, Short.MAX_VALUE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 177, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel7))
-                        .addGap(89, 89, 89)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel8)
-                            .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 186, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addGap(104, 104, 104))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(62, 62, 62)
-                        .addComponent(lblSolicitudesNoAtendidas))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(22, 22, 22)
-                        .addComponent(btnSalir)))
-                .addGap(18, 18, 18)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 162, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(35, 35, 35)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel8)
-                            .addComponent(jLabel7))
-                        .addGap(23, 23, 23)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 207, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 207, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                        .addGroup(layout.createSequentialGroup()
-                            .addComponent(jLabel9)
-                            .addGap(230, 230, 230))
-                        .addGroup(layout.createSequentialGroup()
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(jLabel1)
-                                .addComponent(txtCodigo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(jLabel2)
-                                .addComponent(txtNombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(jLabel3)
-                                .addComponent(txtQuimico, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGap(15, 15, 15)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(jLabel4)
-                                .addComponent(txtTratamiento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(jLabel5)
-                                .addComponent(txtCantidad, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGap(14, 14, 14)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(jLabel6)
-                                .addComponent(txtUnidadMedida, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 27, Short.MAX_VALUE)
-                .addComponent(btnSolicitar)
-                .addGap(18, 18, 18))
-        );
+        getContentPane().add(btnSolicitar, new org.netbeans.lib.awtextra.AbsoluteConstraints(770, 615, -1, -1));
 
         pack();
         setLocationRelativeTo(null);
@@ -326,7 +253,136 @@ public class FrmSolicitudes extends javax.swing.JFrame {
 
     private void btnSolicitarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSolicitarActionPerformed
         // TODO add your handling code here:
+
+        if (transportistasSeleccionados == null) {
+
+        } else if (residuoObtenido == null) {
+        } else {
+            float cantidadDivida = (residuoObtenido.getCantidad()) / (transportistasSeleccionados.size());
+            for (int i = 0; i < transportistasSeleccionados.size(); i++) {
+                negocio.agregarFlete(new Flete(residuoObtenido, transportistasSeleccionados.get(0), null, cantidadDivida));
+            }
+
+            JOptionPane.showMessageDialog(null, "Completada la solicitud");
+            this.vaciarFormulario();
+        }
+
+
     }//GEN-LAST:event_btnSolicitarActionPerformed
+
+    public void vaciarFormulario() {
+        this.txtCodigo.setText("");
+        this.txtNombre.setText("");
+        this.txtCantidad.setText("");
+        this.txtUnidadMedida.setText("");
+
+        this.buscarTransportistas();
+        this.transportistasSeleccionados.clear();
+        this.llenarTablaTransportistas();
+        this.llenarTablaTransportistasSeleccionados();
+    }
+
+    public void llenarResiduo() {
+        this.txtCodigo.setText(String.valueOf(residuoObtenido.getCodigo()));
+        this.txtNombre.setText(String.valueOf(residuoObtenido.getNombre()));
+        this.txtCantidad.setText(String.valueOf(residuoObtenido.getCantidad()));
+        this.txtUnidadMedida.setText(String.valueOf(residuoObtenido.getUnidad()));
+
+    }
+
+    public void buscarTransportistas() {
+        List<Usuario> usuarios = negocio.buscarUsuarios();
+        System.out.println(usuarios.get(0));
+        for (int i = 0; i < usuarios.size(); i++) {
+            if (usuarios.get(i).getTipo().equals("transportista")) {
+                transportistas.add(usuarios.get(i));
+            }
+        }
+    }
+
+    public void llenarTablaTransportistas() {
+
+        DefaultTableModel modeloTabla = (DefaultTableModel) this.tblTransportistas.getModel();
+        // Limpia tabla anterior
+        modeloTabla.setRowCount(0);
+        transportistas.forEach(transportista -> {
+
+            Object[] fila = {
+                transportista.getNombre()
+
+            };
+            modeloTabla.addRow(fila);
+        });
+
+    }
+
+    public void llenarTablaTransportistasSeleccionados() {
+
+        DefaultTableModel modeloTabla = (DefaultTableModel) this.tblTransportistasSeleccionados.getModel();
+        // Limpia tabla anterior
+        modeloTabla.setRowCount(0);
+        transportistasSeleccionados.forEach(transportista -> {
+
+            Object[] fila = {
+                transportista.getNombre()
+
+            };
+            modeloTabla.addRow(fila);
+        });
+
+    }
+    private void tblTrasladoNAMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblTrasladoNAMouseClicked
+        // TODO add your handling code here:
+
+        int filaTabla = this.tblTrasladoNA.getSelectedRow();
+
+        FrmProductor formularioProductor = fabrica.crearFormularioProductor(traslados.get(filaTabla));
+        formularioProductor.setVisible(true);
+        formularioProductor.btnSeleccionar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                int filaTabla = formularioProductor.tblResiduos.getSelectedRow();
+
+                residuoObtenido = formularioProductor.residuos.get(filaTabla);
+                formularioProductor.dispose();
+                llenarResiduo();
+                buscarTransportistas();
+                llenarTablaTransportistas();
+            }
+
+        });
+
+
+    }//GEN-LAST:event_tblTrasladoNAMouseClicked
+
+    private void tblTransportistasMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblTransportistasMouseClicked
+        // TODO add your handling code here:
+        int fila = this.tblTransportistas.getSelectedRow();
+        Transportista transportistaSeleccionado = new Transportista();
+        transportistaSeleccionado.setNombre((String) this.tblTransportistas.getValueAt(fila, 0));
+
+        this.transportistasSeleccionados.add(transportistaSeleccionado);
+
+        this.transportistas.remove(fila);
+
+        this.llenarTablaTransportistas();
+        this.llenarTablaTransportistasSeleccionados();
+    }//GEN-LAST:event_tblTransportistasMouseClicked
+
+    private void tblTransportistasSeleccionadosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblTransportistasSeleccionadosMouseClicked
+        // TODO add your handling code here:
+        int fila = this.tblTransportistasSeleccionados.getSelectedRow();
+        Transportista transportistaSeleccionado = new Transportista();
+        transportistaSeleccionado.setNombre((String) this.tblTransportistasSeleccionados.getValueAt(fila, 0));
+
+        this.transportistasSeleccionados.remove(fila);
+
+        this.transportistas.add(transportistaSeleccionado);
+
+        this.llenarTablaTransportistas();
+        this.llenarTablaTransportistasSeleccionados();
+
+    }//GEN-LAST:event_tblTransportistasSeleccionadosMouseClicked
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -334,8 +390,6 @@ public class FrmSolicitudes extends javax.swing.JFrame {
     private javax.swing.JButton btnSolicitar;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
@@ -344,15 +398,13 @@ public class FrmSolicitudes extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JTable jTable1;
-    private javax.swing.JTable jTable2;
     private javax.swing.JLabel lblSolicitudesNoAtendidas;
+    private javax.swing.JTable tblTransportistas;
+    private javax.swing.JTable tblTransportistasSeleccionados;
     private javax.swing.JTable tblTrasladoNA;
     private javax.swing.JTextField txtCantidad;
     private javax.swing.JTextField txtCodigo;
     private javax.swing.JTextField txtNombre;
-    private javax.swing.JTextField txtQuimico;
-    private javax.swing.JTextField txtTratamiento;
     private javax.swing.JTextField txtUnidadMedida;
     // End of variables declaration//GEN-END:variables
 }

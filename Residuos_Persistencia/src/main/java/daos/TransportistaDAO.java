@@ -12,9 +12,11 @@ import dominio.Flete;
 import dominio.Transportista;
 import dominio.Usuario;
 import interfaces.ITransportistaDAO;
+import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JOptionPane;
 import org.bson.Document;
+import org.bson.types.ObjectId;
 
 /**
  *

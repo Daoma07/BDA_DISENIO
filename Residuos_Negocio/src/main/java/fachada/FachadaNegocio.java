@@ -64,6 +64,11 @@ public class FachadaNegocio implements INegocio {
     }
 
     @Override
+    public List<Usuario> buscarUsuarios() {
+        return administradorNegocio.buscarUsuarios();
+    }
+
+    @Override
     public Flete agregarFlete(Flete flete) {
         return fleteNegocio.agregarFlete(flete);
     }

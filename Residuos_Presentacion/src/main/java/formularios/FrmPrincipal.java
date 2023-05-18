@@ -18,7 +18,7 @@ import javax.swing.JOptionPane;
  * @author Jairo G. Rodriguez Hernandez 00000213248
  */
 public class FrmPrincipal extends javax.swing.JFrame {
-
+    
     private INegocio negocio;
     private FabricaFormularios fabrica;
     private Usuario usuario;
@@ -35,17 +35,17 @@ public class FrmPrincipal extends javax.swing.JFrame {
         this.validarUsuario();
         // JOptionPane.showMessageDialog(null, usuario.toString());
     }
-
+    
     public void esconderBotones() {
-
+        
         this.btnRegistrarResiduoProductor.setVisible(false);
         this.btnSolicitarTrasladoProductor.setVisible(false);
         this.btnRegistrarTrasladoTransportista.setVisible(false);
         this.btnVerTrasladosAdministrador.setVisible(false);
     }
-
+    
     public void validarUsuario() {
-
+        
         if (null != usuario.getTipo()) {
             switch (usuario.getTipo()) {
                 case "productor":
@@ -63,7 +63,7 @@ public class FrmPrincipal extends javax.swing.JFrame {
                     break;
             }
         }
-
+        
     }
 
     /**
@@ -85,7 +85,7 @@ public class FrmPrincipal extends javax.swing.JFrame {
 
         jLabel1.setText("jLabel1");
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Principal");
         setBackground(new java.awt.Color(255, 255, 255));
         setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
@@ -181,7 +181,7 @@ public class FrmPrincipal extends javax.swing.JFrame {
 
     private void btnSalirMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnSalirMouseClicked
         // TODO add your handling code here:
-        this.dispose();
+        System.exit(0);
     }//GEN-LAST:event_btnSalirMouseClicked
 
     private void btnSolicitarTrasladoProductorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSolicitarTrasladoProductorActionPerformed

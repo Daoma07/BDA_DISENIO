@@ -6,6 +6,7 @@
 package factory;
 
 import dominio.Productor;
+import dominio.Traslado;
 import dominio.Usuario;
 import fachada.INegocio;
 import fachada.FachadaNegocio;
@@ -36,8 +37,8 @@ public class FabricaFormularios extends IFabricaFormularios {
     }
 
     @Override
-    public FrmProductor crearFormularioProductor() {
-        return new FrmProductor();
+    public FrmProductor crearFormularioProductor(Traslado traslado) {
+        return new FrmProductor(negocio, traslado);
     }
 
     @Override

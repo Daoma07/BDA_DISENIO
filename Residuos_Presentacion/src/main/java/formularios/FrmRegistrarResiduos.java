@@ -354,7 +354,7 @@ public class FrmRegistrarResiduos extends javax.swing.JFrame {
     private void txtCodigoKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtCodigoKeyTyped
         // TODO add your handling code here:
         char c = evt.getKeyChar();
-        if (this.txtCodigo.getText().length() > 6) {
+        if (this.txtCodigo.getText().length() == 6) {
             evt.consume();
         }
         if(c<'0' || c>'9') evt.consume();
