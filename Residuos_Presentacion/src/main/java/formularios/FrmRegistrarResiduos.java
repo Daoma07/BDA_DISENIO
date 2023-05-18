@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -302,7 +303,43 @@ public class FrmRegistrarResiduos extends javax.swing.JFrame {
 
     }
 
+    
+    public boolean validarCampoVacioCodigo(){
+        if(txtCodigo.getText().isEmpty()){
+            JOptionPane.showMessageDialog(null, "Campo de codigo vacio...", "Error", JOptionPane.INFORMATION_MESSAGE);
+            return false;
+        }else{
+            return true;
+        }
+    }
+    
+    public boolean validarCodigo(){
+        if(txtCodigo.getText().length()<6){
+            JOptionPane.showMessageDialog(null, "Campo codigo deben ser 7 digitos...", "Error", JOptionPane.INFORMATION_MESSAGE);
+            return false;
+        }else{
+            return true;
+        }
+    }
+    
+    public boolean validarCampoVacioNombre(){
+        if(txtNombre.getText().isEmpty()){
+            JOptionPane.showMessageDialog(null, "Campo nombre vacio...", "Error", JOptionPane.INFORMATION_MESSAGE);
+            return false;
+        }else{
+            return true;
+        }
+    }
 
+    public boolean validarSeleccionQuimico(){
+        if(quimicosSeleccionados.size() == 0){
+            JOptionPane.showMessageDialog(null, "Porfavor agrega minimo un quimico al residuo...", "Error", JOptionPane.INFORMATION_MESSAGE);
+            return false;
+        }else{
+            return true;
+        }
+    }
+    
     private void tblQuimicosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblQuimicosMouseClicked
         // TODO add your handling code here:
         this.seleccionarQuimico();
@@ -316,14 +353,18 @@ public class FrmRegistrarResiduos extends javax.swing.JFrame {
 
     private void txtCodigoKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtCodigoKeyTyped
         // TODO add your handling code here:
+        char c = evt.getKeyChar();
         if (this.txtCodigo.getText().length() > 6) {
             evt.consume();
         }
+        if(c<'0' || c>'9') evt.consume();
     }//GEN-LAST:event_txtCodigoKeyTyped
 
     private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
         // TODO add your handling code here:
-        this.guardarResiduo();
+        if(validarCampoVacioCodigo() != false && validarCodigo() != false && validarCampoVacioNombre() != false && validarSeleccionQuimico() != false){
+            this.guardarResiduo();
+        }
     }//GEN-LAST:event_btnGuardarActionPerformed
 
     private void tblQuimicosSeleccionadosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblQuimicosSeleccionadosMouseClicked

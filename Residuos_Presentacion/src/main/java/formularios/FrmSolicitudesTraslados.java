@@ -11,6 +11,7 @@ import dominio.Unidad;
 import dominio.Usuario;
 import fachada.INegocio;
 import factory.FabricaFormularios;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -156,6 +157,66 @@ public class FrmSolicitudesTraslados extends javax.swing.JFrame {
         this.llenarTablaResiduoSeleccionado();
     }
 
+    public boolean validadCampoCantidad() {
+        if (txtCantidad.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Campo cantidad vacio...", "Error", JOptionPane.INFORMATION_MESSAGE);
+            return false;
+        } else {
+            return true;
+        }
+    }
+    
+    public boolean validaCampoFecha(){
+        if(fecha.getDate() == null){
+            JOptionPane.showMessageDialog(null, "Porfavor selecciona una fecha del selector...", "Error", JOptionPane.INFORMATION_MESSAGE);
+            return false;
+        }else{
+            return true;
+        }
+    }
+    
+    public boolean validaFechaSeleccionada(){
+        LocalDate fechaActual = LocalDate.now();
+        Date fechaAsignada = fecha.getDate();
+        Date nuevaFechaActual = new Date(fechaActual.getYear()-1900, fechaActual.getMonthValue()-1,fechaActual.getDayOfMonth());
+        int res = fechaAsignada.compareTo(nuevaFechaActual);
+        System.out.println("FECHA ACTUAL: "+ nuevaFechaActual);
+        System.out.println("FECHA SELECCIONADA: "+ fechaAsignada);
+        if(res<0){
+            JOptionPane.showMessageDialog(null, "La fecha asignada es menor a la actual...", "Error", JOptionPane.INFORMATION_MESSAGE);
+            return false;
+        }
+        return true;
+    }
+    
+    public boolean validarSeleccionResiduo(){
+        if(residuosSeleccionados.size() == 0){
+            JOptionPane.showMessageDialog(null, "Porfavor agrega minimo un residuo al traslado...", "Error", JOptionPane.INFORMATION_MESSAGE);
+            return false;
+        }else{
+            return true;
+        }
+    }
+    
+    public boolean validaAsignacionUnidadCantidad(){
+        float cantidad = 0;
+        Unidad unidadMedida = null;
+        
+        for (int i = 0; i < residuosSeleccionados.size(); i++) {
+            cantidad = (float) tblSeleccionSolicitudes.getValueAt(i, 3);
+            unidadMedida = (Unidad) tblSeleccionSolicitudes.getValueAt(i, 4);
+            System.out.println("CANTIDAD"+cantidad);
+            System.out.println("UNIDAD"+unidadMedida);
+            if(cantidad <= 0 || unidadMedida == null){    
+            JOptionPane.showMessageDialog(null, "Porfavor asigna una cantidad y unidad de medida al residuo...", "Error", JOptionPane.INFORMATION_MESSAGE);
+            return false;
+            }
+        }
+        return true;
+    }
+    
+    
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -187,6 +248,7 @@ public class FrmSolicitudesTraslados extends javax.swing.JFrame {
         jLabel7 = new javax.swing.JLabel();
         btnSeleccionar = new javax.swing.JButton();
         btnAsignar = new javax.swing.JButton();
+        jLabel8 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Solicitudes Traslados");
@@ -268,11 +330,17 @@ public class FrmSolicitudesTraslados extends javax.swing.JFrame {
                 cbxUnidadesActionPerformed(evt);
             }
         });
-        getContentPane().add(cbxUnidades, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 410, -1, -1));
-        getContentPane().add(txtCantidad, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 480, 101, -1));
+        getContentPane().add(cbxUnidades, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 430, -1, -1));
 
-        jLabel4.setText("Ingrese la Cantidad:");
-        getContentPane().add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 450, -1, 20));
+        txtCantidad.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtCantidadKeyTyped(evt);
+            }
+        });
+        getContentPane().add(txtCantidad, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 490, 101, -1));
+
+        jLabel4.setText("Unidad de Medida");
+        getContentPane().add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 400, -1, 20));
 
         btnSolicitar.setText("Solicitar");
         btnSolicitar.addActionListener(new java.awt.event.ActionListener() {
@@ -359,6 +427,9 @@ public class FrmSolicitudesTraslados extends javax.swing.JFrame {
         });
         getContentPane().add(btnAsignar, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 530, -1, -1));
 
+        jLabel8.setText("Ingrese la Cantidad:");
+        getContentPane().add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 460, -1, 20));
+
         pack();
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
@@ -402,15 +473,19 @@ public class FrmSolicitudesTraslados extends javax.swing.JFrame {
     }
 
     private void btnSolicitarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSolicitarActionPerformed
-        // TODO add your handling code here:
-
-        Traslado traslado = new Traslado(residuosSeleccionados, null, fecha.getDate(), null);
-
-        if (negocio.agregarTraslado(traslado) != null) {
-            JOptionPane.showMessageDialog(null, "Se agrego el Traslado");
-            this.vaciarFormulario();
+        if (validaAsignacionUnidadCantidad() != false && validaCampoFecha() != false && validaFechaSeleccionada() != false && validarSeleccionResiduo() != false) {
+            Traslado traslado = new Traslado(residuosSeleccionados, null, fecha.getDate(), null);
+            if (negocio.agregarTraslado(traslado) != null) {
+                JOptionPane.showMessageDialog(null, "Se agrego el Traslado");
+                this.vaciarFormulario();
+            }
         }
     }//GEN-LAST:event_btnSolicitarActionPerformed
+
+    private void txtCantidadKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtCantidadKeyTyped
+        char c = evt.getKeyChar();
+        if(c<'0' || c>'9') evt.consume();
+    }//GEN-LAST:event_txtCantidadKeyTyped
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -427,6 +502,7 @@ public class FrmSolicitudesTraslados extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
